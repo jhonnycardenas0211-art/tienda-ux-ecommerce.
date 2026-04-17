@@ -6,64 +6,114 @@ import { useNavigate } from 'react-router-dom';
 const AdminDashboard = () => {
     const [salesData, setSalesData] = useState(null);
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Mock auth verification instead of full login page for simplicity
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                // In a real app we'd get a token and pass it. Here we test the local endpoint directly.
-                // Assuming we disabled strict auth, or we pass a mock token if needed.
-                const response = await fetch('/api/admin/dashboard', {
-                    headers: { 'Authorization': 'Bearer test-token' }
-                });
+    // Login state
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [adminUser, setAdminUser] = useState('');
+    const [adminPass, setAdminPass] = useState('');
 
-                // If it fails due to auth middleware configured previously, we mock the data here to guarantee it works for the showcase,
-                // But the backend integration logic is there.
-                if (response.ok) {
-                    const json = await response.json();
-                    if (json.success) {
-                        setSalesData(json.data.salesData);
-                        setProducts(json.data.productsData);
-                    }
-                } else {
-                    // Fallback mock data if the backend server isn't running or auth fails during showcase
-                    setSalesData({
-                        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                        datasets: [{ label: 'Ventas 2026', data: [1500, 2200, 3100, 5200, 2600, 3500] }]
-                    });
-                    setProducts([
-                        { id: 1, name: "Premium Watch", category: "Accessories", price: 299, stock: 45 },
-                        { id: 2, name: "Wireless Headphones", category: "Electronics", price: 159, stock: 12 },
-                        { id: 3, name: "Leather Bag", category: "Fashion", price: 199, stock: 8 },
-                        { id: 4, name: "Smart Glasses", category: "Electronics", price: 399, stock: 24 }
-                    ]);
-                }
-            } catch (err) {
-                console.error(err);
-                // Fallback mock data
-                setSalesData({
-                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                    datasets: [{ label: 'Ventas 2026', data: [1500, 2200, 3100, 5200, 2600, 3500] }]
-                });
-                setProducts([
-                    { id: 1, name: "Premium Watch", category: "Accessories", price: 299, stock: 45 },
-                    { id: 2, name: "Wireless Headphones", category: "Electronics", price: 159, stock: 12 },
-                    { id: 3, name: "Leather Bag", category: "Fashion", price: 199, stock: 8 },
-                    { id: 4, name: "Smart Glasses", category: "Electronics", price: 399, stock: 24 }
-                ]);
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: adminUser, password: adminPass })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setIsAuthenticated(true);
+                fetchDashboardData(data.token);
+            } else {
+                alert("Credenciales incorrectas o acceso denegado.");
             }
+        } catch {
+            alert("Error de conexión con el backend.");
+        } finally {
             setLoading(false);
-        };
-        fetchDashboardData();
-    }, []);
+        }
+    };
+
+    const fetchDashboardData = async (token) => {
+        setLoading(true);
+        try {
+            const response = await fetch('/api/admin/dashboard', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const json = await response.json();
+                if (json.success) {
+                    setSalesData(json.data.salesData);
+                    setProducts(json.data.productsData);
+                }
+            } else {
+                loadMockData(); // Fallback
+            }
+        } catch (err) {
+            console.error(err);
+            loadMockData(); // Fallback
+        }
+        setLoading(false);
+    };
+
+    const loadMockData = () => {
+        setSalesData({
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{ label: 'Ventas 2026', data: [1500, 2200, 3100, 5200, 2600, 3500] }]
+        });
+        setProducts([
+            { id: 1, name: "Premium Watch", category: "Accessories", price: 299, stock: 45 },
+            { id: 2, name: "Wireless Headphones", category: "Electronics", price: 159, stock: 12 },
+            { id: 3, name: "Leather Bag", category: "Fashion", price: 199, stock: 8 },
+            { id: 4, name: "Smart Glasses", category: "Electronics", price: 399, stock: 24 }
+        ]);
+    };
 
     const handleLogout = () => {
-        // Clear token logic here
-        navigate('/');
+        setIsAuthenticated(false);
+        setAdminUser('');
+        setAdminPass('');
     };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="container" style={{ padding: '8rem 0', display: 'flex', justifyContent: 'center' }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass" style={{ padding: '3rem', borderRadius: '30px', width: '100%', maxWidth: '400px' }}>
+                    <h2 style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.8rem', fontWeight: '900' }}>ACCESO <span className="gradient-text">ADMIN</span></h2>
+                    <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>CORREO ADMINISTRATIVO</label>
+                            <input
+                                type="email"
+                                value={adminUser}
+                                onChange={(e) => setAdminUser(e.target.value)}
+                                required
+                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: 'white' }}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>CONTRASEÑA SECRETA</label>
+                            <input
+                                type="password"
+                                value={adminPass}
+                                onChange={(e) => setAdminPass(e.target.value)}
+                                required
+                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: 'white' }}
+                            />
+                        </div>
+                        <button type="submit" className="premium-btn" style={{ padding: '1.2rem', borderRadius: '15px' }} disabled={loading}>
+                            {loading ? 'VERIFICANDO...' : 'ENTRAR AL PANEL'}
+                        </button>
+                    </form>
+                </motion.div>
+            </div>
+        );
+    }
 
     if (loading) {
         return <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>Cargando Panel Administrativo...</div>;
