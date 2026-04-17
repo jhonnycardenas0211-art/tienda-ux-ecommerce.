@@ -52,7 +52,7 @@ const Navbar = () => {
                             padding: '0.6rem 1rem 0.6rem 2.5rem',
                             borderRadius: 'var(--radius-sm)',
                             backgroundColor: 'var(--input-bg)',
-                            color: 'white',
+                            color: 'var(--input-text)',
                             border: 'none',
                             fontSize: '0.9rem',
                             outline: 'none'

@@ -45,7 +45,9 @@ const Search = () => {
 
     const filteredAndSortedProducts = useMemo(() => {
         const filtered = allProducts.filter(product => {
-            const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const term = searchTerm.toLowerCase();
+            const matchesSearch = product.name.toLowerCase().includes(term) || 
+                                product.category.toLowerCase().includes(term);
             const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
             return matchesSearch && matchesCategory;
         });
@@ -106,7 +108,7 @@ const Search = () => {
                             style={{
                                 background: 'none',
                                 border: 'none',
-                                color: 'white',
+                                color: 'var(--input-text)',
                                 padding: '1rem',
                                 flex: 1,
                                 outline: 'none',
