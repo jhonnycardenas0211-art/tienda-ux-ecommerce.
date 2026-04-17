@@ -18,6 +18,20 @@ const AdminDashboard = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        const ADMIN_USER = "jhnnynz2010@gmail.com";
+        const ADMIN_PASS = "admin123";
+
+        // Vercel-Safe Bypass: If it's the master key, don't even call the backend
+        if (adminUser.trim().toLowerCase() === ADMIN_USER && adminPass.trim() === ADMIN_PASS) {
+            setTimeout(() => {
+                setIsAuthenticated(true);
+                loadMockData();
+                setLoading(false);
+            }, 800);
+            return;
+        }
+
         try {
             const res = await fetch('/api/admin/login', {
                 method: 'POST',
