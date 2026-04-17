@@ -27,7 +27,12 @@ const Login = () => {
         const result = await login(credentials.username, credentials.password);
 
         if (result.success) {
-            navigate('/');
+            // Si es admin, lo mandamos al panel, si no al home
+            if (result.isAdmin) {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
         } else {
             setError(result.message);
             setLoading(false);

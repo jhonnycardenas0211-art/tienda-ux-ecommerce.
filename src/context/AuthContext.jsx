@@ -21,6 +21,27 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (username, password) => {
+        // Intercept Master Admin Account
+        const ADMIN_USER = "jhnnynz2010@gmail.com";
+        const ADMIN_PASS = "admin123";
+
+        if (username.trim().toLowerCase() === ADMIN_USER && password.trim() === ADMIN_PASS) {
+            const adminData = {
+                id: 999,
+                username: "jhnnynz2010@gmail.com",
+                email: "jhnnynz2010@gmail.com",
+                firstName: "Admin",
+                lastName: "Project",
+                gender: "other",
+                image: "https://robohash.org/admin.png",
+                role: "admin", // Mark as admin
+                token: "mock-admin-token-" + Date.now()
+            };
+            setUser(adminData);
+            localStorage.setItem('user', JSON.stringify(adminData));
+            return { success: true, isAdmin: true };
+        }
+
         try {
             const response = await fetch('https://dummyjson.com/auth/login', {
                 method: 'POST',
