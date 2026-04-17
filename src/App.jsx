@@ -31,7 +31,7 @@ function App() {
         <Route path="/search" element={<Search />} />
       </Routes>
       <footer className="container" style={{ textAlign: 'center', padding: '2rem 0', borderTop: '1px solid var(--border-color)', marginTop: 'auto' }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>&copy; 2026 STORE UX. Todos los derechos reservados.</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>&copy; 2026 <span className="notranslate" translate="no">STORE UX</span>. Todos los derechos reservados.</p>
       </footer>
     </div>
   );

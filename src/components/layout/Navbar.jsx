@@ -33,7 +33,7 @@ const Navbar = () => {
         }}>
             <div className="container" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                 {/* Logo */}
-                <NavLink to="/" className="logo-text">
+                <NavLink to="/" className="logo-text notranslate" translate="no">
                     [STORE <span className="logo-highlight">UX</span>]
                 </NavLink>
 
