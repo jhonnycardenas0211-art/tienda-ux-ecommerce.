@@ -11,6 +11,7 @@ const Checkout = () => {
     const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Success
+    const [loading, setLoading] = useState(false);
     const [shippingDetails, setShippingDetails] = useState({
         name: user?.firstName + ' ' + (user?.lastName || '') || '',
         address: 'Av. Central #45-12, Bogotá',
