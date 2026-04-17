@@ -74,6 +74,30 @@ const Checkout = () => {
     };
 
 
+    const handleCashOnDelivery = () => {
+        setLoading(true);
+        setTimeout(() => {
+            const newOrder = {
+                id: 'VOU-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                date: new Date().toISOString().split('T')[0],
+                total: cartTotal + 60000,
+                status: 'Contra Entrega', // Special status
+                method: 'Efectivo',
+                user: user.email,
+                items: cart.map(i => ({ name: i.name, qty: i.quantity, price: i.price }))
+            };
+
+            // Save for Admin and History
+            const orders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+            localStorage.setItem('admin_orders', JSON.stringify([newOrder, ...orders]));
+
+            setStep(3);
+            clearCart();
+            setLoading(false);
+        }, 1500);
+    };
+
+
     if (step === 3) {
         return (
             <div className="container" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -86,8 +110,16 @@ const Checkout = () => {
                     <div style={{ width: '100px', height: '100px', background: 'var(--grad-premium)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem auto' }}>
                         <CheckCircle2 size={60} color="white" />
                     </div>
-                    <h1 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>¡PEDIDO EXITOSO!</h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '2rem' }}>Gracias por tu compra, {user.firstName}. Hemos enviado los detalles a tu correo electrónico.</p>
+                    <h1 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>¡PEDIDO RECIBIDO!</h1>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '2rem' }}>
+                        Gracias por tu compra, {user.firstName}.
+                        <br />
+                        <span style={{ color: 'white', fontWeight: 'bold' }}>Tu Voucher de pago ha sido generado.</span>
+                    </p>
+                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '15px', border: '1px dashed var(--border-glass)', marginBottom: '2rem' }}>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>NÚMERO DE VOUCHER</p>
+                        <p style={{ fontSize: '1.2rem', fontWeight: '900', letterSpacing: '2px' }}>VOU-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+                    </div>
                     <Link to="/" className="premium-btn" style={{ padding: '1rem 3rem', textDecoration: 'none', borderRadius: '15px' }}>VOLVER AL INICIO</Link>
                 </motion.div>
             </div>
@@ -151,6 +183,23 @@ const Checkout = () => {
                                         disabled={loading}
                                     />
                                 </div>
+
+                                <button
+                                    onClick={handleCashOnDelivery}
+                                    disabled={loading}
+                                    className="btn-outline"
+                                    style={{
+                                        padding: '1.2rem',
+                                        borderRadius: '15px',
+                                        borderColor: 'var(--accent-secondary)',
+                                        color: 'var(--accent-secondary)',
+                                        fontWeight: '800',
+                                        background: 'rgba(100, 255, 218, 0.05)'
+                                    }}
+                                >
+                                    {loading ? 'PROCESANDO...' : 'PAGAR CONTRA ENTREGA'}
+                                </button>
+
                                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                                     <button type="button" onClick={() => setStep(1)} className="btn-outline" style={{ flex: 1, padding: '1.2rem', borderRadius: '15px' }}>
                                         ATRÁS
