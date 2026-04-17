@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, Search, User, LogOut } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
@@ -7,6 +8,17 @@ const Navbar = () => {
     const { cartCount, favCount, setIsFavoritesOpen } = useCart();
     const { user, logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const [navbarSearch, setNavbarSearch] = useState('');
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (navbarSearch.trim()) {
+            navigate(`/search?q=${encodeURIComponent(navbarSearch.trim())}`);
+            setNavbarSearch('');
+        } else {
+            navigate('/search');
+        }
+    };
 
     return (
         <nav style={{
@@ -25,26 +37,33 @@ const Navbar = () => {
                     [STORE <span className="logo-highlight">UX</span>]
                 </NavLink>
 
-                {/* Search Bar - Hidden on small screens for brevity here, but could be made responsive */}
-                <NavLink to="/search" className="nav-search">
-                    <div style={{
-                        width: '100%',
-                        padding: '0.6rem 1rem 0.6rem 2.5rem',
-                        borderRadius: 'var(--radius-sm)',
-                        backgroundColor: 'var(--input-bg)',
-                        color: 'var(--text-muted)',
-                        fontSize: '0.9rem',
-                        display: 'flex',
-                        alignItems: 'center'
-                    }}>
-                        Buscar productos...
-                    </div>
+                <form 
+                    onSubmit={handleSearchSubmit} 
+                    className="nav-search"
+                    style={{ position: 'relative' }}
+                >
+                    <input
+                        type="text"
+                        placeholder="Buscar productos..."
+                        value={navbarSearch}
+                        onChange={(e) => setNavbarSearch(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '0.6rem 1rem 0.6rem 2.5rem',
+                            borderRadius: 'var(--radius-sm)',
+                            backgroundColor: 'var(--input-bg)',
+                            color: 'white',
+                            border: 'none',
+                            fontSize: '0.9rem',
+                            outline: 'none'
+                        }}
+                    />
                     <Search
                         size={18}
                         color="var(--text-muted)"
-                        style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)' }}
+                        style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
                     />
-                </NavLink>
+                </form>
 
                 {/* Actions */}
                 <div className="nav-actions">

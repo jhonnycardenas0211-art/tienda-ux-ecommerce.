@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Checkout from './pages/Checkout';
 import AdminDashboard from './pages/AdminDashboard';
 import History from './pages/History';
+import Search from './pages/Search';
 import Navbar from './components/layout/Navbar';
 import FavoritesSidebar from './components/layout/FavoritesSidebar';
 import Toast from './components/common/Toast';
@@ -27,6 +28,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/history" element={<History />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
       <footer className="container" style={{ textAlign: 'center', padding: '2rem 0', borderTop: '1px solid var(--border-color)', marginTop: 'auto' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>&copy; 2026 STORE UX. Todos los derechos reservados.</p>

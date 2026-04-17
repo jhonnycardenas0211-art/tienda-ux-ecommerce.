@@ -3,17 +3,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search as SearchIcon, SlidersHorizontal, ShoppingBag } from 'lucide-react';
 import { getProducts, getCategories } from '../services/products';
 import { useCart } from '../context/CartContext';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Skeleton from '../components/common/Skeleton';
 
 const Search = () => {
     const { addToCart } = useCart();
+    const location = useLocation();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [allProducts, setAllProducts] = useState([]);
     const [categories, setCategories] = useState(['All']);
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('default');
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const q = queryParams.get('q');
+        if (q !== null) {
+            setSearchTerm(q);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         const fetchData = async () => {
