@@ -22,7 +22,7 @@ const AdminDashboard = () => {
             const res = await fetch('/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: adminUser, password: adminPass })
+                body: JSON.stringify({ username: adminUser.trim(), password: adminPass.trim() })
             });
             const data = await res.json();
             if (data.success) {

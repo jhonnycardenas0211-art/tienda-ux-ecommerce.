@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
-const ADMIN_USER = process.env.ADMIN_USER || "jhnnynz2010@gmail.com";
-const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
+const ADMIN_USER = "jhnnynz2010@gmail.com";
+const ADMIN_PASS = "admin123";
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 export const loginAdmin = (req, res) => {
