@@ -11,57 +11,50 @@ const Checkout = () => {
     const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Success
-    const [loading, setLoading] = useState(false);
+    const [shippingDetails, setShippingDetails] = useState({
+        name: user?.firstName + ' ' + (user?.lastName || '') || '',
+        address: 'Av. Central #45-12, Bogotá',
+        phone: '312 456 7890',
+        instructions: ''
+    });
+    const [selectedMethod, setSelectedMethod] = useState('');
 
-    if (!isAuthenticated) {
-        return (
-            <div className="container" style={{ textAlign: 'center', padding: '5rem 0' }}>
-                <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Necesitas iniciar sesión</h2>
-                <p style={{ marginBottom: '2rem', color: 'var(--text-muted)' }}>Para finalizar tu compra premium, por favor accede a tu cuenta.</p>
-                <Link to="/login" className="premium-btn" style={{ padding: '1rem 2rem', textDecoration: 'none' }}>INICIAR SESIÓN</Link>
-            </div>
-        );
-    }
-
-    if (cart.length === 0 && step !== 3) {
-        return (
-            <div className="container" style={{ textAlign: 'center', padding: '5rem 0' }}>
-                <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Tu carrito está vacío</h2>
-                <Link to="/" className="btn-outline" style={{ padding: '1rem 2rem', textDecoration: 'none' }}>VOLVER A LA TIENDA</Link>
-            </div>
-        );
-    }
+    const handleShippingChange = (e) => {
+        setShippingDetails({ ...shippingDetails, [e.target.name]: e.target.value });
+    };
 
     const handlePayPalApprove = async (data, actions) => {
         setLoading(true);
+        setSelectedMethod('PayPal');
         try {
             const details = await actions.order.capture();
 
             const newOrder = {
-                id: 'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                id: 'ORD-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
                 date: new Date().toISOString().split('T')[0],
                 total: cartTotal + 60000,
                 status: 'Entregado',
+                method: 'PayPal',
                 user: user.email,
+                customerName: shippingDetails.name,
+                phone: shippingDetails.phone,
                 items: cart.map(i => ({ name: i.name, qty: i.quantity, price: i.price }))
             };
 
-            // Save for Admin and History
             const orders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
             localStorage.setItem('admin_orders', JSON.stringify([newOrder, ...orders]));
 
-            // Call backend API (optional if backend isn't ready, but keep for structure)
             await fetch('/api/sales/capture-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     orderID: data.orderID,
                     userEmail: details.payer.email_address,
-                    userName: user?.firstName || 'Usuario',
+                    userName: shippingDetails.name,
                     cart,
                     total: (cartTotal + 60000).toLocaleString('es-CO')
                 })
-            }).catch(e => console.log("Backend offline, order saved locally for demo"));
+            }).catch(e => console.log("Backend offline"));
 
             setStep(3);
             clearCart();
@@ -73,21 +66,22 @@ const Checkout = () => {
         }
     };
 
-
     const handleCashOnDelivery = () => {
         setLoading(true);
+        setSelectedMethod('Contra Entrega');
         setTimeout(() => {
             const newOrder = {
-                id: 'VOU-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                id: 'D' + Math.floor(1000 + Math.random() * 9000),
                 date: new Date().toISOString().split('T')[0],
                 total: cartTotal + 60000,
-                status: 'Contra Entrega', // Special status
+                status: 'Contra Entrega',
                 method: 'Efectivo',
                 user: user.email,
+                customerName: shippingDetails.name,
+                phone: shippingDetails.phone,
                 items: cart.map(i => ({ name: i.name, qty: i.quantity, price: i.price }))
             };
 
-            // Save for Admin and History
             const orders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
             localStorage.setItem('admin_orders', JSON.stringify([newOrder, ...orders]));
 
@@ -100,27 +94,69 @@ const Checkout = () => {
 
     if (step === 3) {
         return (
-            <div className="container" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="container" style={{ minHeight: '90vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
                     className="glass"
-                    style={{ padding: '4rem', textAlign: 'center', borderRadius: '40px', maxWidth: '600px' }}
+                    style={{
+                        padding: '3rem',
+                        textAlign: 'center',
+                        borderRadius: '30px',
+                        maxWidth: '500px',
+                        width: '100%',
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+                    }}
                 >
-                    <div style={{ width: '100px', height: '100px', background: 'var(--grad-premium)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem auto' }}>
-                        <CheckCircle2 size={60} color="white" />
+                    <div style={{ width: '80px', height: '80px', background: '#4ade80', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+                        <CheckCircle2 size={50} color="black" />
                     </div>
-                    <h1 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>¡PEDIDO RECIBIDO!</h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '2rem' }}>
-                        Gracias por tu compra, {user.firstName}.
-                        <br />
-                        <span style={{ color: 'white', fontWeight: 'bold' }}>Tu Voucher de pago ha sido generado.</span>
+
+                    <h1 style={{ fontSize: '2.2rem', fontWeight: '900', color: 'white', marginBottom: '0.5rem' }}>
+                        ¡Listo, tu pedido #{Math.floor(1000 + Math.random() * 9000)} fue recibido!
+                    </h1>
+
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Lo estamos preparando.</p>
+                    <p style={{ color: 'white', fontWeight: '600', marginBottom: '2rem' }}>
+                        Tiempo estimado: <span style={{ color: 'var(--accent-secondary)' }}>15-25 min.</span>
                     </p>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '15px', border: '1px dashed var(--border-glass)', marginBottom: '2rem' }}>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>NÚMERO DE VOUCHER</p>
-                        <p style={{ fontSize: '1.2rem', fontWeight: '900', letterSpacing: '2px' }}>VOU-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+
+                    <div style={{
+                        background: 'rgba(255,255,255,0.03)',
+                        borderRadius: '20px',
+                        padding: '1.5rem',
+                        border: '1px solid var(--border-glass)',
+                        textAlign: 'left',
+                        marginBottom: '2.5rem'
+                    }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div>
+                                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '0.3rem' }}>TIPO DE PEDIDO</p>
+                                <p style={{ fontSize: '1.1rem', fontWeight: '900' }}>Domicilio</p>
+                            </div>
+                            <div>
+                                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '0.3rem' }}>PRODUCTOS</p>
+                                <p style={{ fontSize: '1.1rem', fontWeight: '900' }}>{cart.length || 2}</p>
+                            </div>
+                            <div>
+                                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '0.3rem' }}>TOTAL</p>
+                                <p style={{ fontSize: '1.1rem', fontWeight: '900' }}>${(cartTotal + 60000).toLocaleString('es-CO')}</p>
+                            </div>
+                            <div>
+                                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '0.3rem' }}>MÉTODO DE PAGO</p>
+                                <p style={{ fontSize: '1.1rem', fontWeight: '900' }}>{selectedMethod || 'Tarjeta'}</p>
+                            </div>
+                        </div>
                     </div>
-                    <Link to="/" className="premium-btn" style={{ padding: '1rem 3rem', textDecoration: 'none', borderRadius: '15px' }}>VOLVER AL INICIO</Link>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <button onClick={() => navigate('/history')} className="premium-btn" style={{ padding: '1.2rem', borderRadius: '15px', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}>
+                            Ver estado del pedido
+                        </button>
+                        <Link to="/" className="btn-outline" style={{ padding: '1.2rem', borderRadius: '15px', color: 'white', textDecoration: 'none', fontWeight: 'bold', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            Seguir viendo el menú
+                        </Link>
+                    </div>
                 </motion.div>
             </div>
         );
@@ -135,27 +171,29 @@ const Checkout = () => {
                         <div style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
                             {step === 1 ? <Truck color="var(--accent-secondary)" /> : <CreditCard color="var(--accent-secondary)" />}
                         </div>
-                        <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{step === 1 ? 'ENVÍO' : 'PAGO'}</h2>
+                        <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{step === 1 ? 'RESUMEN DE LA ORDEN' : 'PAGO'}</h2>
                     </div>
 
                     <div className="glass" style={{ padding: '2.5rem', borderRadius: '30px' }}>
                         {step === 1 ? (
                             <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                 <div className="input-group">
-                                    <label style={labelStyle}>DIRECCIÓN DE ENTREGA</label>
-                                    <input type="text" placeholder="Calle Falsa 123" style={inputStyle} defaultValue="Av. Central #45-12, Bogotá" />
+                                    <label style={labelStyle}>NOMBRE *</label>
+                                    <input type="text" name="name" value={shippingDetails.name} onChange={handleShippingChange} placeholder="Ej. Juan Pérez" style={inputStyle} required />
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                    <div className="input-group">
-                                        <label style={labelStyle}>CIUDAD</label>
-                                        <input type="text" style={inputStyle} defaultValue="Medellín" />
-                                    </div>
-                                    <div className="input-group">
-                                        <label style={labelStyle}>CÓDIGO POSTAL</label>
-                                        <input type="text" style={inputStyle} defaultValue="05001" />
-                                    </div>
+                                <div className="input-group">
+                                    <label style={labelStyle}>DIRECCIÓN *</label>
+                                    <input type="text" name="address" value={shippingDetails.address} onChange={handleShippingChange} placeholder="Ej. Calle 12 # 34 56" style={inputStyle} required />
                                 </div>
-                                <button type="button" onClick={() => setStep(2)} className="premium-btn" style={{ padding: '1.2rem', borderRadius: '15px', marginTop: '1rem' }}>
+                                <div className="input-group">
+                                    <label style={labelStyle}>TELÉFONO *</label>
+                                    <input type="text" name="phone" value={shippingDetails.phone} onChange={handleShippingChange} placeholder="Ej. 312 456 7890" style={inputStyle} required />
+                                </div>
+                                <div className="input-group">
+                                    <label style={labelStyle}>INSTRUCCIONES DE ENTREGA (OPCIONAL)</label>
+                                    <input type="text" name="instructions" value={shippingDetails.instructions} onChange={handleShippingChange} placeholder="Ej. Dejar en la portería" style={inputStyle} />
+                                </div>
+                                <button type="button" onClick={() => setStep(2)} className="premium-btn" style={{ padding: '1.2rem', borderRadius: '15px', marginTop: '1rem', fontWeight: 'bold' }}>
                                     CONTINUAR AL PAGO
                                 </button>
                             </form>
