@@ -45,7 +45,7 @@ const Checkout = () => {
                     userEmail: details.payer.email_address,
                     userName: user?.firstName || 'Usuario',
                     cart,
-                    total: (cartTotal + 15).toFixed(2)
+                    total: (cartTotal + 60000).toLocaleString('es-CO')
                 })
             });
 
@@ -131,7 +131,7 @@ const Checkout = () => {
                                                     {
                                                         amount: {
                                                             currency_code: "USD",
-                                                            value: (cartTotal + 15).toFixed(2),
+                                                            value: (cartTotal + 60000).toFixed(2), // PayPal requires dot notation, but keep in mind PayPal may not accept large values easily in tests without COP setup
                                                         },
                                                     },
                                                 ],
@@ -167,7 +167,7 @@ const Checkout = () => {
                                         <p style={{ fontSize: '0.85rem', fontWeight: '600', margin: 0 }}>{item.name}</p>
                                         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>x{item.quantity}</p>
                                     </div>
-                                    <p style={{ fontSize: '0.9rem', fontWeight: '800' }}>${(item.price * item.quantity).toFixed(2)}</p>
+                                    <p style={{ fontSize: '0.9rem', fontWeight: '800' }}>${(item.price * item.quantity).toLocaleString('es-CO')}</p>
                                 </div>
                             ))}
                         </div>
@@ -175,15 +175,15 @@ const Checkout = () => {
                         <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                                 <span>Subtotal</span>
-                                <span>${cartTotal.toFixed(2)}</span>
+                                <span>${cartTotal.toLocaleString('es-CO')}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                                 <span>Envío Premium</span>
-                                <span>$15.00</span>
+                                <span>$60.000</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.5rem', fontWeight: '900', marginTop: '1rem' }}>
                                 <span>TOTAL</span>
-                                <span className="gradient-text">${(cartTotal + 15).toFixed(2)}</span>
+                                <span className="gradient-text">${(cartTotal + 60000).toLocaleString('es-CO')}</span>
                             </div>
                         </div>
                     </div>

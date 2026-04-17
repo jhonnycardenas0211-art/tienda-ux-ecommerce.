@@ -38,16 +38,18 @@ export const getProducts = async () => {
         const data = await response.json();
 
         // Mapear los datos de DummyJSON a nuestra interfaz
-        return data.products.map(product => applyLocalRating({
-            id: product.id,
-            name: product.title,
-            price: product.price,
-            category: mapCategory(product.category),
-            image: product.thumbnail,
-            description: product.description,
-            rating: product.rating,
-            gallery: product.images || [product.thumbnail]
-        }));
+        return data.products
+            .filter(p => !/dog|cat|pet|animal/i.test(p.title) && !/dog|cat|pet|animal/i.test(p.category))
+            .map(product => applyLocalRating({
+                id: product.id,
+                name: product.title,
+                price: product.price * 4000,
+                category: mapCategory(product.category),
+                image: product.thumbnail,
+                description: product.description,
+                rating: product.rating,
+                gallery: product.images || [product.thumbnail]
+            }));
     } catch (error) {
         console.error("Error fetching products:", error);
         return [];
@@ -63,7 +65,7 @@ export const getProductById = async (id) => {
         return applyLocalRating({
             id: product.id,
             name: product.title,
-            price: product.price,
+            price: product.price * 4000,
             category: mapCategory(product.category),
             image: product.thumbnail,
             description: product.description,

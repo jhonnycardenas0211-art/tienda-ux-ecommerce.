@@ -80,7 +80,7 @@ const FavoritesSidebar = () => {
                                                 {product.name}
                                             </Link>
                                             <p style={{ color: 'var(--accent-red)', fontWeight: 'bold', fontSize: '1rem', marginTop: '0.2rem' }}>
-                                                ${product.price.toFixed(2)}
+                                                ${product.price.toLocaleString('es-CO')}
                                             </p>
                                             <div style={{ display: 'flex', gap: '0.8rem', marginTop: '0.5rem' }}>
                                                 <button

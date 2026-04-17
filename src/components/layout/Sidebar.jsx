@@ -33,8 +33,8 @@ const Sidebar = ({ categories = ['Todas'], currentCategory, setCategory, priceRa
                 <input
                     type="range"
                     min="0"
-                    max="2000"
-                    step="50"
+                    max="8000000"
+                    step="50000"
                     value={priceRange}
                     onChange={(e) => setPriceRange(parseInt(e.target.value))}
                     style={{
@@ -46,7 +46,7 @@ const Sidebar = ({ categories = ['Todas'], currentCategory, setCategory, priceRa
                 />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: '700' }}>
                     <span>$0</span>
-                    <span style={{ color: 'var(--accent-red)' }}>${priceRange}</span>
+                    <span style={{ color: 'var(--accent-red)' }}>${priceRange.toLocaleString('es-CO')}</span>
                 </div>
             </div>
 
@@ -55,7 +55,7 @@ const Sidebar = ({ categories = ['Todas'], currentCategory, setCategory, priceRa
                 style={{ width: '100%', fontSize: '0.7rem' }}
                 onClick={() => {
                     setCategory('Todas');
-                    setPriceRange(2000);
+                    setPriceRange(8000000);
                 }}
             >
                 RESETEAR FILTROS

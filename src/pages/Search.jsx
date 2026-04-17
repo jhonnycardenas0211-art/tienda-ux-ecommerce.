@@ -173,7 +173,7 @@ const Search = () => {
                                         overflow: 'hidden',
                                         height: '2.8rem'
                                     }}>{product.name}</h4>
-                                    <p style={{ color: 'white', fontWeight: '900', fontSize: '1.3rem', marginTop: '0.5rem' }}>${product.price.toFixed(2)}</p>
+                                    <p style={{ color: 'white', fontWeight: '900', fontSize: '1.3rem', marginTop: '0.5rem' }}>${product.price.toLocaleString('es-CO')}</p>
                                     <button
                                         className="premium-btn"
                                         style={{ width: '100%', marginTop: '1rem', padding: '0.8rem', borderRadius: '12px' }}

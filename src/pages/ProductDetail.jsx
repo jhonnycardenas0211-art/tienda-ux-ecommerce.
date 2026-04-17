@@ -144,7 +144,7 @@ const ProductDetail = () => {
                     </div>
 
                     <p style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '1.5rem', color: 'var(--accent-red)' }}>
-                        ${product.price.toFixed(2)}
+                        ${product.price.toLocaleString('es-CO')}
                     </p>
 
                     <div style={{ marginBottom: '2rem' }}>

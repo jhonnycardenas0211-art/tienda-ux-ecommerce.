@@ -40,7 +40,7 @@ const Cart = () => {
                                                 <span style={{ fontWeight: '800', minWidth: '20px', textAlign: 'center' }}>{item.quantity}</span>
                                                 <button onClick={() => addToCart(item)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Plus size={16} /></button>
                                             </div>
-                                            <p style={{ fontSize: '1.3rem', fontWeight: '900', margin: 0 }}>${(item.price * item.quantity).toFixed(2)}</p>
+                                            <p style={{ fontSize: '1.3rem', fontWeight: '900', margin: 0 }}>${(item.price * item.quantity).toLocaleString('es-CO')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -56,15 +56,15 @@ const Cart = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '2.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span style={{ color: 'var(--text-muted)' }}>Subtotal</span>
-                                <span style={{ fontWeight: '700' }}>${cartTotal.toFixed(2)}</span>
+                                <span style={{ fontWeight: '700' }}>${cartTotal.toLocaleString('es-CO')}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span style={{ color: 'var(--text-muted)' }}>Envío Premium</span>
-                                <span style={{ color: 'var(--accent-secondary)', fontWeight: '700' }}>$15.00</span>
+                                <span style={{ color: 'var(--accent-secondary)', fontWeight: '700' }}>$60.000</span>
                             </div>
                             <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '1.5rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                                 <span style={{ fontWeight: '800' }}>TOTAL</span>
-                                <span className="gradient-text" style={{ fontSize: '2rem', fontWeight: '900' }}>${(cartTotal + 15).toFixed(2)}</span>
+                                <span className="gradient-text" style={{ fontSize: '2rem', fontWeight: '900' }}>${(cartTotal + 60000).toLocaleString('es-CO')}</span>
                             </div>
                         </div>
 

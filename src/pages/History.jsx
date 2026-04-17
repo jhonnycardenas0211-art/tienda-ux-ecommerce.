@@ -65,14 +65,14 @@ const History = () => {
                                 {order.items.map((item, idx) => (
                                     <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
                                         <span>{item.qty}x {item.name}</span>
-                                        <span>${item.price.toFixed(2)}</span>
+                                        <span>${item.price.toLocaleString('es-CO')}</span>
                                     </div>
                                 ))}
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-glass)' }}>
                                 <p style={{ fontSize: '1.2rem', fontWeight: '900', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                                    <DollarSign size={18} color="var(--accent-red)" /> {order.total.toFixed(2)}
+                                    <DollarSign size={18} color="var(--accent-red)" /> {order.total.toLocaleString('es-CO')}
                                 </p>
                             </div>
                         </motion.div>

@@ -11,7 +11,7 @@ const Home = () => {
     const [allProducts, setAllProducts] = useState([]);
     const [categories, setCategories] = useState(['Todas']);
     const [filterCategory, setFilterCategory] = useState('Todas');
-    const [priceRange, setPriceRange] = useState(2000);
+    const [priceRange, setPriceRange] = useState(8000000);
     const [sortBy, setSortBy] = useState('default');
     const { addToCart, toggleFavorite, favorites } = useCart();
     const navigate = useNavigate();
@@ -157,7 +157,7 @@ const Home = () => {
                                         <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '0.5rem' }}>
                                             {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} fill={i <= Math.floor(product.rating || 0) ? "#ffd700" : "none"} color="#ffd700" />)}
                                         </div>
-                                        <p className="product-price">${product.price.toFixed(2)}</p>
+                                        <p className="product-price">${product.price.toLocaleString('es-CO')}</p>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '1rem' }}>
                                             <NavLink
                                                 to={`/product/${product.id}`}
