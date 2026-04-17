@@ -20,6 +20,23 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
+    const trackUserForAdmin = (userData) => {
+        try {
+            const allUsers = JSON.parse(localStorage.getItem('admin_users') || '[]');
+            const userExists = allUsers.find(u => u.username === userData.username);
+
+            if (!userExists) {
+                const newUser = {
+                    id: userData.id || Date.now(),
+                    username: userData.username,
+                    email: userData.email,
+                    registeredAt: new Date().toISOString()
+                };
+                localStorage.setItem('admin_users', JSON.stringify([...allUsers, newUser]));
+            }
+        } catch (e) { console.error(e); }
+    };
+
     const login = async (username, password) => {
         // Intercept Master Admin Account
         const ADMIN_USER = "jhnnynz2010@gmail.com";
@@ -39,6 +56,7 @@ export const AuthProvider = ({ children }) => {
             };
             setUser(adminData);
             localStorage.setItem('user', JSON.stringify(adminData));
+            trackUserForAdmin(adminData);
             return { success: true, isAdmin: true };
         }
 
@@ -54,6 +72,7 @@ export const AuthProvider = ({ children }) => {
             if (response.ok) {
                 setUser(data);
                 localStorage.setItem('user', JSON.stringify(data));
+                trackUserForAdmin(data);
                 return { success: true };
             } else {
                 return { success: false, message: data.message || 'Error al iniciar sesión' };
@@ -79,6 +98,7 @@ export const AuthProvider = ({ children }) => {
                 // Autologueamos al usuario tras el registro
                 setUser(data);
                 localStorage.setItem('user', JSON.stringify(data));
+                trackUserForAdmin(data);
                 return { success: true };
             } else {
                 return { success: false, message: data.message || 'Error al crear cuenta' };

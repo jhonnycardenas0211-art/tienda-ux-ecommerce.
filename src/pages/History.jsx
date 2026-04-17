@@ -3,24 +3,18 @@ import { Package, Calendar, DollarSign, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const History = () => {
-    // Mock purchase history
-    const history = [
+    // Read from localStorage (includes orders from Checkout)
+    const storedOrders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+
+    // We can also have an initial mock for the first load if it's empty
+    const history = storedOrders.length > 0 ? storedOrders : [
         {
-            id: 'ORD-99812A',
+            id: 'ORD-INIT-01',
             date: '2026-04-10',
-            total: 314.00,
+            total: 1200000,
             status: 'Entregado',
             items: [
-                { name: 'Premium Watch', qty: 1, price: 299.00 }
-            ]
-        },
-        {
-            id: 'ORD-88234B',
-            date: '2026-03-25',
-            total: 174.00,
-            status: 'Entregado',
-            items: [
-                { name: 'Wireless Headphones', qty: 1, price: 159.00 }
+                { name: 'Ejemplo: Premium Watch', qty: 1, price: 1200000 }
             ]
         }
     ];
