@@ -1,14 +1,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search as SearchIcon, SlidersHorizontal, ShoppingBag } from 'lucide-react';
+import { Search as SearchIcon, SlidersHorizontal, ShoppingBag, Star } from 'lucide-react';
 import { getProducts, getCategories } from '../services/products';
 import { useCart } from '../context/CartContext';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Skeleton from '../components/common/Skeleton';
 
 const Search = () => {
     const { addToCart } = useCart();
     const location = useLocation();
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [allProducts, setAllProducts] = useState([]);
@@ -141,7 +142,7 @@ const Search = () => {
                 </div>
             </div>
 
-            <motion.div className="grid-products" layout>
+            <motion.div className="product-grid" layout>
                 {loading ? (
                     Array(8).fill(0).map((_, i) => (
                         <div key={i} className="glass" style={{ borderRadius: '24px', height: '400px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -160,35 +161,47 @@ const Search = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ duration: 0.3 }}
-                                className="glass card-hover"
-                                style={{ borderRadius: '24px', overflow: 'hidden' }}
+                                className="product-card"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => navigate(`/product/${product.id}`)}
                             >
-                                <Link to={`/product/${product.id}`}>
-                                    <div style={{ aspectRatio: '1', background: 'var(--grad-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '15px', overflow: 'hidden' }}>
-                                            <img src={product.image} alt={product.name} style={{ width: '80%', height: '80%', objectFit: 'contain' }}
-                                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
-                                            />
-                                            <ShoppingBag size={48} opacity={0.1} color="black" style={{ display: 'none' }} />
-                                        </div>
+                                <div className="product-image-container">
+                                    <div style={{ width: '100%', height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-color)', borderRadius: '1rem', overflow: 'hidden' }}>
+                                        <img 
+                                            src={product.image} 
+                                            alt={product.name} 
+                                            className="product-image"
+                                            style={{ 
+                                                maxHeight: '80%', 
+                                                maxWidth: '80%', 
+                                                objectFit: 'contain' 
+                                            }}
+                                        />
                                     </div>
-                                </Link>
-                                <div style={{ padding: '1.5rem' }}>
-                                    <span style={{ fontSize: '0.8rem', color: 'var(--accent-secondary)', fontWeight: '600', textTransform: 'uppercase' }}>{product.category}</span>
-                                    <h4 style={{
-                                        fontSize: '1.1rem',
-                                        margin: '0.3rem 0',
+                                    <div className="product-badge" style={{ background: 'var(--accent-red)', color: 'white' }}>{product.category}</div>
+                                </div>
+                                <div className="product-info">
+                                    <h3 className="product-name" style={{
                                         display: '-webkit-box',
                                         WebkitLineClamp: 2,
                                         WebkitBoxOrient: 'vertical',
                                         overflow: 'hidden',
-                                        height: '2.8rem'
-                                    }}>{product.name}</h4>
-                                    <p style={{ color: 'white', fontWeight: '900', fontSize: '1.3rem', marginTop: '0.5rem' }}>${product.price.toLocaleString('es-CO')}</p>
+                                        minHeight: '2.8rem',
+                                        lineHeight: '1.4'
+                                    }}>{product.name}</h3>
+                                    <div style={{ display: 'flex', gap: '0.2rem', marginBottom: '0.5rem' }}>
+                                        {[1, 2, 3, 4, 5].map(i => (
+                                            <Star key={i} size={14} fill={i <= Math.floor(product.rating || 0) ? "#ffd700" : "none"} color="#ffd700" />
+                                        ))}
+                                    </div>
+                                    <p className="product-price">${product.price.toLocaleString('es-CO')}</p>
                                     <button
-                                        className="premium-btn"
+                                        className="btn-primary"
                                         style={{ width: '100%', marginTop: '1rem', padding: '0.8rem', borderRadius: '12px' }}
-                                        onClick={() => addToCart(product)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            addToCart(product);
+                                        }}
                                     >
                                         Añadir al carrito
                                     </button>
